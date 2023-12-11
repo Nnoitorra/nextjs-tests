@@ -1,27 +1,33 @@
-const sql = require('mssql')
-const sqlConfig = {
-    user: 'sa',
-    password: 'DestinyForsaken2018',
-    database: 'joincert2023',
-    server: 'PC-2023-003',
-    options: {
-        trustServerCertificate: true
-    }
-}
+import { PrismaClient } from '@prisma/client'
 
-async function testDB() {
-    try {
-        // make sure that any items are correctly URL encoded in the connection string
-        await sql.connect(sqlConfig)
-        const result = await sql.query`select * from dbo.Activity where ID = 1`
-        console.log(result)
-    } catch (err) {
-        // ... error checks
-        console.log(err)
-    }
+const prisma = new PrismaClient()
+
+async function main() {
+    await prisma.activity.create({
+        data: {
+            kurz: 'tst',
+            activity_de: 'test',
+            activity_en: 'test',
+            activity_es: 'test',
+            activity_fr: 'tëst',
+            activity_HU: 'tost',
+            activity_it: 'tist',
+            activity_pl: 'tast'
+        }
+    })
+    const allActivities = await prisma.activity.findMany()
+    console.log(allActivities)
 }
 
 export default function Page() {
-    testDB()
+    main()
+        .then(async () => {
+            await prisma.$disconnect()
+        })
+        .catch(async (e) => {
+            console.error(e)
+            await prisma.$disconnect
+            process.exit(1)
+        })
     return <p>TestPage</p>;
 }
